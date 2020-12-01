@@ -1,6 +1,6 @@
-drop table categories;
-drop table movies;
-drop table users;
-drop table books;
-drop table reviews;
-drop table images;
+drop table if exists categories;
+drop table if exists movies;
+drop table if exists users;
+drop table if exists books;
+drop table if exists reviews;
+drop table if exists images;
