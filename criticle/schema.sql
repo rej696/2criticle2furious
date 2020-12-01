@@ -17,7 +17,7 @@ create table movies (
     genre varchar(255),
     summary text,
     image_id integer,
-    foregin key (image_id) references images (id)
+    foreign key (image_id) references images (id)
 );
 
 -- Books table
@@ -28,7 +28,7 @@ create table books (
     genre varchar(255),
     summary text,
     image_id integer,
-    foregin key (image_id) references images (id)
+    foreign key (image_id) references images (id)
 );
 
 -- Categories Database
@@ -54,7 +54,7 @@ create table reviews (
     media_id integer not null,
     user_id integer not null,
     body text,
-    rating integer,
-    foreign key (category_id) references categories(id) not null,
-    foreign key (user_id) references users(id) not null
+    rating integer, -- enforce score out of 30
+    foreign key (category_id) references categories(id),
+    foreign key (user_id) references users(id)
 );
