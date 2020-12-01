@@ -133,3 +133,6 @@ dmypy.json
 
 # databases
 *.db
+
+# dumb garbage
+garbage/
