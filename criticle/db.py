@@ -37,7 +37,8 @@ def init_db():
     # populate database using populate.sql script
     with current_app.open_resource('sql_scripts/populate.sql') as f:
         db.executescript(f.read().decode('utf8'))
-
+    
+    db.commit()
 
 @click.command('init-db')
 @with_appcontext
