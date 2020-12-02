@@ -29,8 +29,11 @@ def create_app(test_config=None):
     from . import db
     db.init_app(app)
 
-    from .add_user import bp as add_user_bp
-    app.register_blueprint(add_user_bp)
+    from .auth import bp as auth_bp
+    app.register_blueprint(auth_bp)
+
+    from .profile import bp as profile_bp
+    app.register_blueprint(profile_bp)
     
     # from . import user_profile # user_profile.py
     # app.register_blueprint(user_profile)
