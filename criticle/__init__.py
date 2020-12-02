@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-from flask import Flask
+from flask import Flask, render_template
 
 
 def create_app(test_config=None):
@@ -22,6 +22,15 @@ def create_app(test_config=None):
         pass
 
     @app.route("/")
+    def home():
+        from .db import get_db
+        database = get_db()
+        users = []
+        for row in database.execute('select username from users').fetchall():
+            users.append(row['username'])
+
+        return render_template('home.j2', users=users)
+
     @app.route("/hello")
     def hello():
         return "Hello, World!"

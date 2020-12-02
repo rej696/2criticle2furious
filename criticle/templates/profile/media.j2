@@ -1,0 +1,48 @@
+{% extends 'base.j2' %}
+
+{% block header %}{{ title }}{% endblock %}
+
+{% block content %}
+    {# profile details #}
+    <div class="container">
+        <div class="row">
+            <div class="col"><img src="{{ url_for('static', filename='images/download.jpg') }}" class="img-thumbnail" alt="profile image"></div>
+            <div class="col">
+                {% for attr_key in profile_attrs.keys() %}
+                    <div class="row">
+                        <div class="col">{{ attr_key.title() }}:</div>
+                        <div class="col">{{ profile_attrs[attr_key] }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class='col-2'>Summary:</div>
+            <div class="col">{{ summary }}</div>
+        </div>
+    </div>
+
+    {# media/user specific reviews #}
+    {% for review in reviews %}
+        <br />
+        <div class="container p-2 bg-dark text-white">
+            <div class="row">
+                {% if page == 'media' %}
+                    <div class="col-1">User:</div>
+                    <div class="col-1"><div class="text-left"><a href="{{ url_for('profile.view_user_reviews', username=review.user) }}">{{ review.user }}</a></div></div>
+                {% else %}
+                    <div class="col-1">{{ review.category.title() }}:</div>
+                    <div class="col"><div class="text-left"><a href="{{ url_for('profile.view_media_reviews', category=review.category, title=review.title) }}" >{{ review.title.title() }}</a></div></div>
+                {% endif %}
+                <div class="col"><div class="text-right">Score: {{ review.rating }}/30</div></div>
+            </div>
+        </div>
+        <div class="container p-1 border">
+            <div class="row">
+                <div class="col-2">Review:</div>
+                <div class="col-10">{{ review.body }}</div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

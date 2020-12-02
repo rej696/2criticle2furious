@@ -45,9 +45,10 @@ def register():
         
         username = request.form['username']
         password = request.form['password']
-        firstname = request.form['firstname']
-        lastname = request.form['lastname']
+        firstname = request.form['firstname'].lower()
+        lastname = request.form['lastname'].lower()
         age = request.form['age']
+        summary = request.form['summary']
 
         db = get_db()
         error = None
@@ -63,8 +64,8 @@ def register():
         
         if error is None:
             db.execute(
-                'insert into users (username, password, firstname, lastname, age, image_id) values (?, ?, ?, ?, ?, ?)',
-                (username, generate_password_hash(password), firstname, lastname, age, image_id)
+                'insert into users (username, password, firstname, lastname, age, image_id, summary) values (?, ?, ?, ?, ?, ?, ?)',
+                (username, generate_password_hash(password), firstname, lastname, age, image_id, summary)
             )
             db.commit()
             
@@ -72,7 +73,7 @@ def register():
         
         flash(error)
             
-    return render_template('auth/register.html')
+    return render_template('auth/register.j2')
 
 
 @bp.route('/login', methods=('GET', 'POST'))
@@ -99,7 +100,7 @@ def login():
         
         flash(error)
 
-    return render_template('auth/login.html')
+    return render_template('auth/login.j2')
 
 
 @bp.before_app_request
@@ -117,7 +118,7 @@ def load_logged_in_user():
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return redirect(url_for('home'))
 
 
 def login_required(view):

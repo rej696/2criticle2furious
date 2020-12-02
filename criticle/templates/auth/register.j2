@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base.j2' %}
 
 {% block header %}
   <h2>{% block title %}Register{% endblock %}</h2>
@@ -16,6 +16,8 @@
     <input name="lastname" id="lastname">
     <label for="age">Age</label>
     <input name="age" id="age">
+    <label for="summary">Summary</label>
+    <textarea name="summary" id="summary"></textarea>
     <input type="submit" value="Register">
   </form>
 {% endblock %}
