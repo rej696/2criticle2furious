@@ -134,5 +134,8 @@ dmypy.json
 # databases
 *.db
 
+# ignore images
+criticle/static/images/
+
 # dumb garbage
 garbage/
