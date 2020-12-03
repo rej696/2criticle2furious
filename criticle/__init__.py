@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import os
+
 from flask import Flask, render_template
+# from criticle.scheduling import run_post_bot
 
 
 def create_app(test_config=None):
@@ -21,16 +23,6 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route("/")
-    def home():
-        from .db import get_db
-        database = get_db()
-        users = []
-        for row in database.execute('select username from users').fetchall():
-            users.append(row['username'])
-
-        return render_template('home.j2', users=users)
-
     @app.route("/hello")
     def hello():
         return "Hello, World!"
@@ -38,11 +30,17 @@ def create_app(test_config=None):
     from . import db
     db.init_app(app)
 
+    from .home import bp as home_bp
+    app.register_blueprint(home_bp)
+
     from .auth import bp as auth_bp
     app.register_blueprint(auth_bp)
 
     from .profile import bp as profile_bp
     app.register_blueprint(profile_bp)
+
+    from .add import bp as add_bp
+    app.register_blueprint(add_bp)
     
     # from . import user_profile # user_profile.py
     # app.register_blueprint(user_profile)
@@ -52,6 +50,8 @@ def create_app(test_config=None):
     # @app.route("/profiles/<string:username>")
     # def profile(username):
     #     return "this is a profile"
+
+    # run_post_bot()
     
 
     return app

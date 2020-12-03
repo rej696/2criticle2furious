@@ -6,19 +6,60 @@
 
 {% block content %}
   <form method="post">
-    <label for="username">Username</label>
-    <input name="username" id="username" required>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
-    <label for="firstname">First Name</label>
-    <input name="firstname" id="firstname">
-    <label for="lastname">Last Name</label>
-    <input name="lastname" id="lastname">
-    <label for="age">Age</label>
-    <input name="age" id="age">
+    <div class="form-row">
+      <div class="col">
+        <label for="username">Username</label>
+      </div>
+      <div class="col">
+        <input name="username" id="username" required>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col">
+        <label for="password">Password</label>
+      </div>
+      <div class="col">
+        <input type="password" name="password" id="password" required>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col">
+        <label for="firstname">First Name</label>
+      </div>
+      <div class="col">
+        <input name="firstname" id="firstname">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col">
+        <label for="lastname">Last Name</label>
+      </div>
+      <div class="col">
+        <input name="lastname" id="lastname">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col">
+        <label for="age">Age</label>
+      </div>
+      <div class="col">
+        <input name="age" id="age">
+      </div>
+    </div>
+
     <label for="summary">Summary</label>
-    <textarea name="summary" id="summary"></textarea>
-    <input type="submit" value="Register">
+    <br />
+    <textarea name="summary" id="summary" style="width: 100%;"></textarea>
+    
+    <div class="form-row">
+      <div class="col">
+        <input type="submit" value="Register">
+      </div>
+    </div>
   </form>
 {% endblock %}
 

@@ -1,114 +1,77 @@
-from criticle.auth import login_required
-from flask import (
-    Blueprint, render_template, request, redirect, url_for, flash, g)
-
-from werkzeug.security import check_password_hash, generate_password_hash
+from typing import Text
+from flask import (Blueprint, render_template)
 
 from criticle.db import get_db
-from criticle.auth import login_required
-from criticle.review import Review
+from criticle.utilities import get_reviews, filter_profile_query
 
 
 # create blueprint
 bp = Blueprint('profile', __name__, url_prefix='/profile')
 
-BANNED_KEYS = (
-    'password',
-    'id',
-    'image_id'
-)
 
-def filter_profile_query(profile_query):
-    profile_attrs = {}
-    for key in profile_query.keys():
-        if key not in BANNED_KEYS:
-            profile_attrs[key] = profile_query[key]
-    return profile_attrs
-
-
-@bp.route('<string:category>/<string:title>/view_reviews', methods=('GET',))
-def view_media_reviews(category, title):
-    database = get_db()
+@bp.route('<string:category>/<string:title>/', methods=('GET',))
+def view_media_profile(category: str, title: str) -> Text:
+    """Return the profile view for media given a media category and title"""
+    db = get_db()
     
-    category_id = database.execute('select id from categories where media_type is ?', (category,)).fetchone()[0]
+    category_id = db.execute(
+        'select id from categories where media_type is ?',
+        (category.lower(),)).fetchone()[0]
 
-    profile_query = database.execute(f'select * from {category} where title is ?', (title,)).fetchall()[0]
+    profile_query = db.execute(
+        f'select * from {category.lower()} where title is ?',
+        (title.lower(),)).fetchall()[0]
 
-    raw_reviews = database.execute('select * from reviews where media_id is ? and category_id is ?', (profile_query['id'], category_id)).fetchall()
-
-    reviews = list(Review(database, review_raw) for review_raw in raw_reviews)
+    reviews_query = db.execute(
+        'select * from reviews where media_id is ? and category_id is ?',
+        (profile_query['id'], category_id)).fetchall()
+    reviews = get_reviews(db, reviews_query)
 
     profile_attrs = filter_profile_query(profile_query)
-
     summary = profile_attrs.pop('summary')
 
-    return render_template('profile/media.j2', title=title.title(), reviews=reviews, profile_attrs=profile_attrs, summary=summary, page="media")
+    image_id = 1
+
+    input = {'profile_attrs': profile_attrs,
+            'reviews': reviews,
+            'heading': title.title(),
+            'summary': summary,
+            'image': f'images/{image_id}.jpg',
+            'page': 'media'}
 
 
-@bp.route('<string:username>/view_reviews', methods=('GET',))
-def view_user_reviews(username):
-    database = get_db()
+    return render_template('profile/profile.j2', input=input)
 
-    user_id = database.execute('select id from users where username is ?', (username, )).fetchone()[0]
+
+@bp.route('<string:username>/', methods=('GET',))
+def view_user_profile(username: str) -> Text:
+    """Return the profile view for a user given a username"""
+    db = get_db()
+
+    user_id = db.execute(
+        'select id from users where username is ?',
+        (username, )).fetchone()[0]
     
-    # Get database entries
-    raw_reviews = database.execute('select * from reviews where user_id is ?', (user_id,)).fetchall()
+    # Get reviews from database
+    reviews_query = db.execute(
+        'select * from reviews where user_id is ?',
+        (user_id,)).fetchall()
+    reviews = get_reviews(db, reviews_query)
 
-    profile_attrs = filter_profile_query(database.execute('select * from users where id is ?', (user_id,)).fetchall()[0])
-
+    # Get profile information from database
+    profile_query = db.execute(
+        'select * from users where id is ?',
+        (user_id,)).fetchall()[0]
+    profile_attrs = filter_profile_query(profile_query)
     summary = profile_attrs.pop('summary')
 
-    reviews = list(Review(database, review_raw) for review_raw in raw_reviews)
+    image_id = 1
 
-    return render_template('profile/media.j2', title=username, reviews=reviews, profile_attrs=profile_attrs, summary=summary, page="user")
+    input = {'profile_attrs': profile_attrs,
+             'reviews': reviews,
+             'heading': username,
+             'summary': summary,
+             'image': f'images/{image_id}.jpg',
+             'page': 'user'}
 
-
-@login_required
-@bp.route('<string:username>/add_review', methods=('GET', 'POST'))
-def add_user_reviews(username):
-    if get_db().execute(
-        'select id from users where username is ?', (username,)
-    ).fetchone()[0] != g.user['id']:
-        flash(f"You do not have permission to add reviews as {username}")
-        return redirect(url_for('home'))
-
-
-
-    if request.method == 'POST':
-        media_type = request.form['category'].lower()
-        media_title = request.form['media_title'].lower()
-        body = request.form['body']
-        rating = int(request.form['rating'])
-        
-        db = get_db()
-        error = None
-
-        if db.execute(
-            'select id from categories where media_type is ?',
-            (media_type,)
-        ).fetchone() is None:
-            error = 'Category does not exist'
-        elif db.execute(
-            f'select id from {media_type} where title is ?',
-            (media_title,)
-        ).fetchone() is None:
-            error = 'Title does not exist'
-        elif rating > 30 or rating < 0:
-            error = 'Rating must be a number between 0 - 30'
-        
-        if error is None:
-            db.execute(
-                f'''insert into reviews (category_id, media_id, user_id, body, rating) values (
-                (select id from categories where media_type is ?),
-                (select id from {media_type} where title is ?),
-                (select id from users where username is ?),
-                ?, ?)''',
-                (media_type, media_title, username, body, rating,)
-            )
-            db.commit()
-
-            return redirect(url_for('profile.view_user_reviews', username=username))
-        
-        flash(error)
-    
-    return render_template('profile/add_review.j2')
+    return render_template('profile/profile.j2', input=input)

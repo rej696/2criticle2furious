@@ -1,0 +1,89 @@
+{% extends 'base.j2' %}
+
+{% block header %}
+  <h2>{% block title %}Add Media{% endblock %}</h2>
+{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript" src="{{ url_for('static', filename='js/manipulate_html.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <div class="form-row">
+      <div class="col">
+        <label for="category">Category</label>
+      </div>
+      <div class="col">
+        <select name="category" id="category">
+          <option value="movies">Movies</option>
+          <option value="books">Books</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col">
+        <label for="media_title">Title</label>
+      </div>
+      <div class="col">
+        <input name="media_title" id="media_title" required>
+      </div>
+    </div>
+
+    {# Show or hide inputs/labels (via js) based on selected category #}
+    
+    {# Movies (default) #}
+    <div class="form-row" id="director_row">
+      <div class="col">
+        <label id="director_label" for="director">Director</label>
+      </div>
+      <div class="col">
+        <input name="director" id="director">
+      </div>
+    </div>
+
+    {# Books (don't display as default) #}
+    <div class="form-row" id="author_row">
+      <div class="col">
+        <label id="author_label" for="author" style="display: none;">Author</label>
+      </div>
+      <div class="col">
+        <input name="author" id="author" style="display: none;">
+      </div>
+    </div>
+
+    {# Common #}
+    <div class="form-row">
+      <div class="col">
+        <label for="genre">Genre</label>
+      </div>
+      <div class="col">
+        <input name="genre" id="genre">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col">
+        <label for="release_date">Release Date</label>
+      </div>
+      <div class="col">
+        <input name="release_date" id="release_date">
+      </div>
+    </div>
+
+    <label for="summary">Summary</label>
+    <br />
+    <textarea name="summary" id="summary" style="width: 100%">{{ request.form['summary'] }}</textarea>
+
+    <div class="form-row">
+      <div class="col">
+        <input type="submit" value="Submit">
+      </div>
+    </div>
+  </form>
+
+  <script type="text/javascript">
+    setUpCategorySelectionListeners();
+  </script>
+{% endblock %}

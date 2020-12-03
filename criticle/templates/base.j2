@@ -7,12 +7,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {% block scripts %}{% endblock %}
 </head>
 </head>
 <!-- Bootstrap navbar -->
-<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+<nav class="navbar navbar-expand-md bg-dark navbar-dark sticky-top">
     
-    <div class="navbar-brand">Criticle</div>
+    <a class="navbar-brand" href="{{ url_for('home.view') }}">Criticle</a>
 
     <!-- Toggler/collapsibe Button -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
@@ -20,29 +21,31 @@
     </button>
 
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
-    <!-- Bootstrap links -->
-    <ul class="navbar-nav">
-        {% if g.user %}
-            <li class="nav-item"><span class="navbar-text">{{ g.user['username'] }}</span></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Log Out</a></li>
-        {% else %}
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Log In</a></li>
-        {% endif %}
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
-    </ul>
+        <!-- Bootstrap links -->
+        <ul class="navbar-nav ml-auto">
+            {% if g.user %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('profile.view_user_profile', username=g.user['username'])}}">{{ g.user['username'] }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Log Out</a></li>
+            {% else %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Log In</a></li>
+            {% endif %}
+        </ul>
+    </div>
 </nav>
 
-<div class="container">
+<div class="container pt-10 pb-3">
 <section class="content">
-    <div class="container p-3 my-3 bg-dark text-white">
-    <header>
-        {% block header %}{% endblock %}
-    </header>
+    <div class="container py-2 my-3 bg-dark text-white">
+        <header>
+            {% block header %}{% endblock %}
+        </header>
     </div>
     {% for message in get_flashed_messages() %}
-        <div class="flash">{{ message }}</div>
+        <div class="alert alert-warning"><strong>Warning!</strong> {{ message }}</div>
     {% endfor %}
     {% block content %}{% endblock %}
 </section>
+</div>
+<div class="container-fluid">
 </div>

@@ -11,37 +11,14 @@ from criticle.db import get_db
 # create blueprint
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-# @bp.route('/hal')
-# def hal():
-#     return 'hal'
-
-# @bp.route('/add_user/<string:name>')
-# def add_user(name):
-#     database = get_db()
-#     database.execute('insert into users(username, firstname, lastname, age, image_id) values(?, ?, ?, ?, ?)', (name, name, 'Jackson', 38, 1335))
-#     database.commit()
-
-#     # Check user has been added by printing current users
-#     results = database.execute('select * from users').fetchall()
-
-#     string = ''
-#     for column in results:
-#         string += '<p>'
-#         for row in column:
-#             string += f'{row}, '
-#         string += '</p>'
-#     print(results[0])
-#     print('break')
-#     print(results[1])
-
-#     return string
-
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
+    '''Get user registration form and insert submitted user data into database'''
+
     if request.method == 'POST':
         # TODO need to add image id and profile pic upload
-        image_id = None
+        image_id = 1
         
         username = request.form['username']
         password = request.form['password']
@@ -64,8 +41,11 @@ def register():
         
         if error is None:
             db.execute(
-                'insert into users (username, password, firstname, lastname, age, image_id, summary) values (?, ?, ?, ?, ?, ?, ?)',
-                (username, generate_password_hash(password), firstname, lastname, age, image_id, summary)
+                '''insert into users 
+                (username, password, firstname, lastname, age, image_id, summary)
+                values (?, ?, ?, ?, ?, ?, ?)''',
+                (username, generate_password_hash(password), firstname,
+                 lastname, age, image_id, summary)
             )
             db.commit()
             
@@ -78,6 +58,7 @@ def register():
 
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
+    '''Check enterd user data is correct and store user_id on session object'''
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -96,7 +77,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('profile.view_user_reviews', username=username))
+            return redirect(url_for('profile.view_user_profile', username=username))
         
         flash(error)
 
@@ -105,6 +86,8 @@ def login():
 
 @bp.before_app_request
 def load_logged_in_user():
+    '''Load user on'''
+
     user_id = session.get('user_id')
 
     if user_id is None:
@@ -118,7 +101,7 @@ def load_logged_in_user():
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('home'))
+    return redirect(url_for('home.view'))
 
 
 def login_required(view):
