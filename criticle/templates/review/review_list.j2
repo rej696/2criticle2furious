@@ -1,0 +1,69 @@
+{# media/user specific reviews #}
+{% for review in input['reviews'] %}
+    <br />
+    <div class="container p-2 bg-dark text-white">
+        <div class="row">
+            {% if input['page'] == 'user' %}
+                {% include 'review/user_review.j2' %}
+            {% elif input['page'] == 'media' %}
+                {% include 'review/media_review.j2' %}
+            {% else %}
+                {% include 'review/default_review.j2' %}
+            {% endif %}
+            <div class="col">
+                <div class="text-right">
+                    {{ review['upload_date'] }}
+                </div>
+            </div>
+            {# <div class="col"><div class="text-right">Score: {{ review['rating'] }}/30</div></div> #}
+        </div>
+    </div>
+    <div class="container p-1 border">
+        {# <div class="row">
+            <div class="col-10">
+                <div>{{ review['body'] }}</div>
+                <div>Score : {{ review['rating'] }}/30</div>
+            </div>
+            <div class="col-2 align-self-center">
+                <div class="progress" style="margin-top: auto; margin-bottom: auto;">
+                    <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated float-center" style="width:{{ review['rating_percentage'] }}"></div>
+                </div>
+            </div>
+        </div> #}
+
+        <div class="row">
+            <div class="col-10">
+                <div>{{ review['body'] }}</div>
+            </div>
+            <div class="col-2 align-self-top">
+                <div class="progress" style="margin-top: auto; margin-bottom: auto;">
+                    <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated float-center" style="width:{{ review['rating_percentage'] }}"></div>
+                </div>
+                <div>Score : {{ review['rating'] }}/30</div>
+            </div>
+        </div>
+
+        {# <div class="row">
+            <div class="col">{{ review['body'] }}</div>
+        </div>
+        <div class="row pt-2">
+            <div class="col"><div class="text-right">Score: {{ review['rating'] }}/30</div></div>
+            <div class="col-2 align-self-center">
+                <div class="progress">
+                    <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated float-right pt-2" style="width:{{ review['rating_percentage'] }}"></div>
+                </div>
+            </div>
+        </div> #}
+        {# <div class="row">
+            <div class="col">{{ review['body'] }}</div>
+        </div>
+        <div class="row pt-2">
+            <div class="col"><div class="text-right">Score: {{ review['rating'] }}/30</div></div>
+            <div class="col-2 align-self-center">
+                <div class="progress">
+                    <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated float-right pt-2" style="width:{{ review['rating_percentage'] }}"></div>
+                </div>
+            </div>
+        </div> #}
+    </div>
+{% endfor %}

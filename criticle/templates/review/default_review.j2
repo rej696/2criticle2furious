@@ -1,0 +1,14 @@
+<div class="col">
+    <div class="text-left">
+        <a href="{{ url_for('profile.view_media_profile', category=review['category'], title=review['title']) }}" >
+            {{ review['title'] }}
+        </a>
+    </div>
+</div>
+<div class="col">
+    <div class="text-left">
+        <a href="{{ url_for('profile.view_user_profile', username=review['username']) }}">
+            {{ review['username'] }}
+        </a>
+    </div>
+</div>

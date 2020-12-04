@@ -1,0 +1,8 @@
+<div class="col-1">User:</div>
+<div class="col-1">
+    <div class="text-left">
+        <a href="{{ url_for('profile.view_user_profile', username=review['username']) }}">
+            {{ review['username'] }}
+        </a>
+    </div>
+</div>
