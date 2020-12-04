@@ -21,7 +21,6 @@ def view():
     reviews_query = db.execute('select * from reviews order by upload_date desc').fetchall()
     reviews = get_reviews(db, reviews_query)
 
-    input = {'users': users,
-             'reviews': reviews}
+    input = {'users': users, 'reviews': reviews}
 
     return render_template('home/home.j2', input=input)

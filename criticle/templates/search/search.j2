@@ -1,0 +1,81 @@
+{% extends 'base.j2' %}
+
+{% block header %}
+    <h2>{% block title %}Search{% endblock %}</h2>
+{% endblock %}
+
+{% block content %}
+
+    {# {% if g.user %}
+        <h3><a href="{{ url_for('add.review', username=g.user['username']) }}">Add Review</a></h3>
+        <h3><a href="{{ url_for('add.media') }}">Add Media</a></h3>
+    {% endif %} #}
+    {#}
+    <ul class="list-group">
+        {% for username in input['users'] %}
+            <li class="list-group-item"><a href="{{ url_for('profile.view_user_profile', username=username) }}">{{ username }}</a></li>
+        {% endfor %}
+    </ul> #}
+
+
+    {# Search Drop Down Options #}
+    <form method="post">
+
+        <div class="form-group">
+            <div class="form-row">
+                <div class="col">
+                    <div>
+                        <label for="display_type">Display:</label>
+                    </div>
+
+
+                    <div>
+                        <div class="form-check-inline">
+                            <label class="form-check-label">
+                                <input type="radio" class="form-check-input" name="display_type" value="reviews">Reviews
+                            </label>
+                        </div>
+                        <div class="form-check-inline">
+                            <label class="form-check-label">
+                                <input type="radio" class="form-check-input" name="display_type" value="profiles">Profiles
+                            </label>
+                        </div>
+                    </div>
+
+                    {# <select name="displaytype" id="displaytype">
+                        <option value="reviews">Reviews</option>
+                        <option value="profiles">Profiles</option>
+                    </select> #}
+                </div>
+
+                <div class="col">
+                    <label for="search_for">Search For:</label>
+                    <select name="search_for" id="search_for" class="custom-select">
+                        <option value="movies">Movies</option>
+                        <option value="books">Books</option>
+                        <option value="users">Users</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group px-2 py-2">
+                    <input class="form-control" type="text" name="search" id="search" placeholder="Search">
+                    <div class="input-group-append">
+                        <button class="btn btn-success" type="submit">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+    {# TODO js/python/jinja needed to select between review list and User list based on radio buttons (review list default?) #}
+    {#}
+    <div id="review_list" style="">
+        {% include 'review/review_list.j2' %}
+    </div>
+    <div id="profile_list" style="display: none;">
+        {% include 'review/profile_list.j2' %}  add profile_list html 
+    </div> #}
+{% endblock %}

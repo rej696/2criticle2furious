@@ -25,12 +25,13 @@ def filter_profile_query(profile_query: Dict) -> Dict:
     profile_attrs = {}
     for key in profile_query.keys():
         if key not in BANNED_KEYS:
-            if 'date' in key:
-                # Database strformat 2020-12-03 15:32:11
-                date_str = parse(profile_query[key])  # .strptime('%Y-%m-%d %H:%M:%S')
-                profile_attrs[key] = date_str.strftime('%H:%M %d-%m-%Y')
-            else:
-                profile_attrs[key] = profile_query[key]
+            if profile_query[key] is not None:
+                if 'date' in key:
+                    # Database strformat 2020-12-03 15:32:11
+                    date_str = parse(profile_query[key])  # .strptime('%Y-%m-%d %H:%M:%S')
+                    profile_attrs[key] = date_str.strftime('%H:%M %d-%m-%Y')
+                else:
+                    profile_attrs[key] = profile_query[key]
     return profile_attrs
     # return {key: profile_query[key] for key in profile_query.keys() if key not in BANNED_KEYS}
 
