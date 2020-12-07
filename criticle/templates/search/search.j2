@@ -31,13 +31,13 @@
 
                     <div>
                         <div class="form-check-inline">
-                            <label class="form-check-label">
-                                <input type="radio" class="form-check-input" name="display_type" value="reviews">Reviews
+                            <label class="form-check-label default">
+                                <input type="radio" class="form-check-input" name="display_type" value="reviews" {% if input['display_type'] == "reviews" %}checked{% endif %}>Reviews
                             </label>
                         </div>
                         <div class="form-check-inline">
                             <label class="form-check-label">
-                                <input type="radio" class="form-check-input" name="display_type" value="profiles">Profiles
+                                <input type="radio" class="form-check-input" name="display_type" value="profiles" {% if input['display_type'] == "profiles" %}checked{% endif %}>Profiles
                             </label>
                         </div>
                     </div>
@@ -51,16 +51,16 @@
                 <div class="col">
                     <label for="search_for">Search For:</label>
                     <select name="search_for" id="search_for" class="custom-select">
-                        <option value="movies">Movies</option>
-                        <option value="books">Books</option>
-                        <option value="users">Users</option>
+                        <option value="movies" {% if input['search_for'] == "movies" %}selected{% endif %}>Movies</option>
+                        <option value="books" {% if input['search_for'] == "books" %}selected{% endif %}>Books</option>
+                        <option value="users" {% if input['search_for'] == "users" %}selected{% endif %}>Users</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="input-group px-2 py-2">
-                    <input class="form-control" type="text" name="search" id="search" placeholder="Search">
+                    <input class="form-control" type="text" name="search" id="search" placeholder="{{ input['search_input'] }}">
                     <div class="input-group-append">
                         <button class="btn btn-success" type="submit">Search</button>
                     </div>
@@ -71,11 +71,37 @@
     </form>
 
     {# TODO js/python/jinja needed to select between review list and User list based on radio buttons (review list default?) #}
-    {#}
-    <div id="review_list" style="">
-        {% include 'review/review_list.j2' %}
-    </div>
-    <div id="profile_list" style="display: none;">
-        {% include 'review/profile_list.j2' %}  add profile_list html 
-    </div> #}
+    {% if input['display_type'] == "reviews" %}
+        <div id="review_list" style="">
+            {% include 'review/review_list.j2' %}
+        </div>
+    {% elif input['display_type'] == "profiles" %}
+        <div id="profile_list" style="">
+            <ul class="list-group">
+                {% for profile in input['profiles'] %}
+                    {% if input['search_for'] == 'users' %}
+                        <li class="list-group-item"><a href="{{ url_for('profile.view_user_profile', username=profile['username']) }}">{{ profile['username'] }}</a></li>
+                    {% else %}
+                        <li class="list-group-item"><a href="{{ url_for('profile.view_media_profile', category=input['search_for'], title=profile['title']) }}">{{ profile['title'] }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+
+
+
+            {# {% if input['search_for'] == 'users' %}
+                <ul class="list-group">
+                    {% for username in input['profiles'] %}
+                        <li class="list-group-item"><a href="{{ url_for('profile.view_user_profile', username=username) }}">{{ username }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <ul class="list-group">
+                    {% for title in input['profiles'] %}
+                        <li class="list-group-item"><a href="{{ url_for('profile.view_media_profile', category=input['search_for'], title=title['title']) }}">{{ title }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% endif %} #}
+        </div>
+    {% endif %}
 {% endblock %}

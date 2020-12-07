@@ -24,7 +24,7 @@ def create_app(test_config=None):
 
     @app.route("/hello")
     def hello():
-        return render_template('search/search.j2')
+        return "<h1>I am an easter egglet</h1>"
     
     from . import db
     db.init_app(app)
@@ -43,6 +43,9 @@ def create_app(test_config=None):
 
     from .add import bp as add_bp
     app.register_blueprint(add_bp)
+
+    from .search import bp as search_bp
+    app.register_blueprint(search_bp)
 
     # from . import user_profile # user_profile.py
     # app.register_blueprint(user_profile)

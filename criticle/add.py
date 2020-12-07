@@ -80,8 +80,8 @@ def add_book_to_database(db: Connection, request_form: Dict):
     '''Inserts book data into the books database'''
 
     title = request_form['media_title'].lower()
-    author = request_form['author']
-    genre = request_form['genre']
+    author = request_form['author'].lower()
+    genre = request_form['genre'].lower()
     summary = request_form['summary']
     release_date = request_form['release_date']
 

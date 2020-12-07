@@ -28,16 +28,21 @@ def view_media_profile(category: str, title: str) -> Text:
     reviews = get_reviews(db, reviews_query)
 
     profile_attrs = filter_profile_query(profile_query)
-    summary = profile_attrs.pop('summary')
+
+    try:
+        summary = profile_attrs.pop('summary')
+    except KeyError:
+        summary = ''
 
     image_id = 1
 
-    input = {'profile_attrs': profile_attrs,
-            'reviews': reviews,
-            'heading': title.title(),
-            'summary': summary,
-            'image': f'images/{image_id}.jpg',
-            'page': 'media'}
+    input = {
+        'profile_attrs': profile_attrs,
+        'reviews': reviews,
+        'heading': title.title(),
+        'summary': summary,
+        'image': f'images/{image_id}.jpg',
+        'page': 'media'}
 
 
     return render_template('profile/profile.j2', input=input)
@@ -63,15 +68,20 @@ def view_user_profile(username: str) -> Text:
         'select * from users where id is ?',
         (user_id,)).fetchall()[0]
     profile_attrs = filter_profile_query(profile_query)
-    summary = profile_attrs.pop('summary')
+
+    try:
+        summary = profile_attrs.pop('summary')
+    except KeyError:
+        summary = ''
 
     image_id = 1
 
-    input = {'profile_attrs': profile_attrs,
-             'reviews': reviews,
-             'heading': username,
-             'summary': summary,
-             'image': f'images/{image_id}.jpg',
-             'page': 'user'}
+    input = {
+        'profile_attrs': profile_attrs,
+        'reviews': reviews,
+        'heading': username,
+        'summary': summary,
+        'image': f'images/{image_id}.jpg',
+        'page': 'user'}
 
     return render_template('profile/profile.j2', input=input)

@@ -10,6 +10,15 @@ BANNED_KEYS = (
     'image_id'
 )
 
+TITLE_ATTRS = (
+    'title',
+    'author',
+    'director',
+    'genre',
+    'firstname',
+    'lastname'
+)
+
 
 def is_valid_date(date_string: str) -> bool:
     """Check if an input string can be parsed correctly as a date"""
@@ -30,6 +39,8 @@ def filter_profile_query(profile_query: Dict) -> Dict:
                     # Database strformat 2020-12-03 15:32:11
                     date_str = parse(profile_query[key])  # .strptime('%Y-%m-%d %H:%M:%S')
                     profile_attrs[key] = date_str.strftime('%H:%M %d-%m-%Y')
+                elif key in TITLE_ATTRS:
+                    profile_attrs[key] = profile_query[key].title()
                 else:
                     profile_attrs[key] = profile_query[key]
     return profile_attrs

@@ -1,9 +1,9 @@
 
 
 insert into users (username, password, firstname, lastname, age, summary) 
-values ('rej696', 'pbkdf2:sha256:150000$YwmgWhU8$a91240efa27793be07681104e7fe5116bc7e53dc4fb807792d349030bb3b2743', 'Rowan', 'Saunders', 24, 'hi i am rowan and this is my review shop');
+values ('rej696', 'pbkdf2:sha256:150000$YwmgWhU8$a91240efa27793be07681104e7fe5116bc7e53dc4fb807792d349030bb3b2743', 'rowan', 'saunders', 24, 'hi i am rowan and this is my review shop');
 insert into users (username, password, firstname, lastname, age, summary) 
-values ('handjacobsanitiser', 'pbkdf2:sha256:150000$YwmgWhU8$a91240efa27793be07681104e7fe5116bc7e53dc4fb807792d349030bb3b2743', 'Hal', 'Smith', 23, 'Hi there Im using whatsapp');
+values ('handjacobsanitiser', 'pbkdf2:sha256:150000$YwmgWhU8$a91240efa27793be07681104e7fe5116bc7e53dc4fb807792d349030bb3b2743', 'hal', 'smith', 23, 'Hi there Im using whatsapp');
 
 insert into categories (media_type) values ('movies');
 

@@ -1,14 +1,21 @@
 {% extends 'base.j2' %}
 
 {% block header %}
-  <h2>{% block title %}Home{% endblock %}</h2>
+    <h2>{% block title %}Home{% endblock %}</h2>
 {% endblock %}
 
 {% block content %}
-    {% if g.user %}
-        <h3><a href="{{ url_for('add.review', username=g.user['username']) }}">Add Review</a></h3>
-        <h3><a href="{{ url_for('add.media') }}">Add Media</a></h3>
-    {% endif %}
+    <div class="row pb-3">
+        <div class="col">
+            <a class="btn btn-success" role="button" href="{{ url_for('search.view') }}">Search</a>
+        </div>
+        <div class="col d-flex justify-content-end">
+            <div class="pr-2">
+                <a class="btn btn-primary {% if g.user %}{% else %}disabled{% endif %}" role="button" href="{{ url_for('add.media') }}">Add Media</a>
+            </div>
+            <a class="btn btn-primary {% if g.user %}{% else %}disabled{% endif %}" role="button" href="{{ url_for('add.review', username=g.user['username']) }}">Add Review</a>
+        </div>
+    </div>
     <ul class="list-group">
         {% for username in input['users'] %}
             <li class="list-group-item"><a href="{{ url_for('profile.view_user_profile', username=username) }}">{{ username }}</a></li>

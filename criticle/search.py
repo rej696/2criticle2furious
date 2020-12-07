@@ -1,31 +1,54 @@
 from typing import Dict, List
-
 from sqlite3 import Connection
 from flask import (Blueprint, render_template, request, flash)
 
 from criticle.db import get_db
-from criticle.utilities import get_reviews, filter_profile_query
+from criticle.utilities import get_reviews
 
 
 # create blueprint
 bp = Blueprint('search', __name__, url_prefix='/search')
 
 
-def get_profiles(db: Connection, profiles_query):
-    # TODO Get users/movies/ from database
-    users = []
-    for row in profiles_query:
-        users.append(row['username'])
-    return users
+def get_profiles(profiles_query, search_for):
+    if search_for == 'users':
+        return [{'username': profile['username']} for profile in profiles_query]
+    else:
+        return [{'title': profile['title'].title()} for profile in profiles_query]
 
 
-def get_input(db: Connection, profiles_query, reviews_query) -> Dict:
-    return {'profiles': get_profiles(db, profiles_query), 'reviews': get_reviews(db, reviews_query)}
+def get_input(db: Connection, display_type: str, search_for: str, search_input:str, profiles_query, reviews_query) -> Dict:
+    return {
+        'display_type': display_type,
+        'search_for': search_for,
+        'profiles': get_profiles(profiles_query, search_for),
+        'reviews': get_reviews(db, reviews_query),
+        'search_input': search_input}
 
 
-def get_default_profiles_query(db: Connection) -> List:
+def get_default_user_profiles_query(db: Connection) -> List:
     """Get all users from database ordered alphabetically"""
-    return db.execute('select * from users order by username asc').fetchall()
+    return db.execute('select username from users order by username asc').fetchall()
+
+
+def get_default_movie_profiles_query(db: Connection) -> List:
+    """Get all movies from database ordered alphabetically"""
+    return db.execute('select title from movies order by title asc').fetchall()
+
+
+def get_default_book_profiles_query(db: Connection) -> List:
+    """Get all books from database ordered alphabetically"""
+    return db.execute('select title from books order by title asc').fetchall()
+
+
+def get_default_profiles_query(db: Connection, search_for: str = None) -> List:
+    """Get all profiles from database ordered alphabetically according to search_for"""
+    if search_for == 'users':
+        return get_default_user_profiles_query(db)
+    elif search_for == 'books':
+        return get_default_book_profiles_query(db)
+    else:
+        return get_default_movie_profiles_query(db)
 
 
 def get_default_reviews_query(db: Connection) -> List:
@@ -33,20 +56,20 @@ def get_default_reviews_query(db: Connection) -> List:
     return db.execute('select * from reviews order by upload_date desc').fetchall()
 
 
-def search_users(db: Connection, search: str) -> List:
-    """Search user database for search input and return user_profiles and user_reviews"""
-    pass
+# def search_users(db: Connection, search: str) -> List:
+#     """Search user database for search input and return user_profiles and user_reviews"""
+#     pass
 
 
-"""select * from reviews where category_id is 
-        (select id from categories where media_type is 'movies')
-        and (media_id is (select id from movies
-        where title like '%rowan saunders%' or director like '%rowan%'
-        or genre like '%rowan%')
-        or user_id is (select id from users
-        where username like '%rowan%' or firstname like '%rowan saunders%'
-        or lastname like '%rowan saunders%' 
-        or firstname || ' ' || lastname like '%rowan saunders%'))""",
+# """select * from reviews where category_id is 
+#         (select id from categories where media_type is 'movies')
+#         and (media_id is (select id from movies
+#         where title like '%rowan saunders%' or director like '%rowan%'
+#         or genre like '%rowan%')
+#         or user_id is (select id from users
+#         where username like '%rowan%' or firstname like '%rowan saunders%'
+#         or lastname like '%rowan saunders%' 
+#         or firstname || ' ' || lastname like '%rowan saunders%'))""",
 
 
 # -------------------------------------------------------------------------
@@ -57,9 +80,9 @@ def search_user_profiles(db: Connection, search: str) -> List:
     """Search users database for search input and return user_profiles"""
 
     return db.execute(
-        """select * from users where username like '%?%'
-        or firstname like '%?%' or lastname like '%?%'
-        or firstname || ' ' || lastname like '%?%')""",
+        """select username from users where username like ?
+        or firstname like ? or lastname like ?
+        or firstname || ' ' || lastname like ?""",
         (search, search, search, search,)
     ).fetchall()
 
@@ -68,9 +91,9 @@ def search_movie_profiles(db: Connection, search: str) -> List:
     """Search movies database for search input and return movie_profiles"""
 
     return db.execute(
-        """select * from movies
-        where title like '%?%' or director like '%?%' or genre like '%?%'
-        order by title asc)""",
+        """select title from movies
+        where title like ? or director like ? or genre like ?
+        order by title asc""",
         (search, search, search,)
     ).fetchall()
 
@@ -79,8 +102,8 @@ def search_book_profiles(db: Connection, search: str) -> List:
     """Search books database for search input and return book_profiles"""
 
     return db.execute(
-        """select * from books
-        where title like '%?%' or author like '%?%' or genre like '%?%'
+        """select title from books
+        where title like ? or author like ? or genre like ?
         order by title asc""",
         (search, search, search,)
     ).fetchall()
@@ -91,9 +114,9 @@ def search_user_reviews(db: Connection, search: str) -> List:
 
     return db.execute(
         """select * from reviews where 
-        user_id is (select id from users where username like '%?%'
-        or firstname like '%?%' or lastname like '%?%'
-        or firstname || ' ' || lastname like '%?%')
+        user_id is (select id from users where username like ?
+        or firstname like ? or lastname like ?
+        or firstname || ' ' || lastname like ?)
         order by upload_date desc""",
         (search, search, search, search,)
     ).fetchall()
@@ -106,7 +129,7 @@ def search_movie_reviews(db: Connection, search: str) -> List:
         """select * from reviews where category_id is 
         (select id from categories where media_type is 'movies')
         and media_id is (select id from movies
-        where title like '%?%' or director like '%?%' or genre like '%?%')
+        where title like ? or director like ? or genre like ?)
         order by upload_date desc""",
         (search, search, search,)
     ).fetchall()
@@ -118,10 +141,10 @@ def search_book_reviews(db: Connection, search: str) -> List:
     return db.execute(
         """select * from reviews where category_id is 
         (select id from categories where media_type is 'books')
-        and media_id is (select id from movies
-        where title like '%?%' or author like '%?%' or genre like '%?%')
+        and media_id is (select id from books
+        where title like ? or author like ? or genre like ?)
         order by upload_date desc""",
-        (search, search, search, search, search, search, search,)
+        (search, search, search,)
     ).fetchall()
 
 
@@ -131,9 +154,10 @@ def view():
     db = get_db()
 
     if request.method == 'POST':
-        display_type = request.form['displaytype'].lower()
-        search_for = request.form['searchfor'].lower()
-        search = request.form['search'].lower()
+        display_type = request.form['display_type'].lower()
+        search_for = request.form['search_for'].lower()
+        search_input = request.form['search']
+        search = f"%{search_input.lower()}%"
 
         reviews_query = None
         profiles_query = None
@@ -151,39 +175,34 @@ def view():
         if search_for == 'users':
 
             reviews_query = search_user_reviews(db, search)
-            profiles_query = search_book_profiles(db, search)
+            profiles_query = search_user_profiles(db, search)
 
-        if reviews_query is None and display_type == 'reviews':
+        if not reviews_query and display_type == 'reviews':
             # write error message and set query to default depending on search_for
-            flash()
-            pass
+            flash(f'"{search_input}" returns no results. Displaying all reviews.')
+            reviews_query = get_default_reviews_query(db=db)
+            profiles_query = get_default_profiles_query(db=db, search_for=search_for)
         
-        if profiles_query is None and display_type == 'profiles':
+        
+        if not profiles_query and display_type == 'profiles':
             # write error message and set query to default depending on search_for
-            flash()
-            pass
-
-        # # search database for profiles from search field
-        # profiles_query = search_profiles(db=db, search=search)
-        
-        # if profiles_query is None:
-        #     error = f'Input "{search}" is not valid. Displaying all existing users.'
-
-        # # search database for reviews from search field
-        # reviews_query = search_reviews(db=db, search=search)
-
-        # if reviews_query is None:
-        #     error = f'Input "{search} is not valid. Displaying all reviews.'
-        
-        # if error is not None:
-        #     flash(error)
-        #     profiles_query = get_default_profiles_query(db=db)
-        #     reviews_query = get_default_reviews_query(db=db)
+            flash(f'"{search_input}" returns no results. Displaying all {search_for} profiles')
+            reviews_query = get_default_reviews_query(db=db)
+            profiles_query = get_default_profiles_query(db=db, search_for=search_for)
 
     else:
+        display_type='reviews'
+        search_for='movies'
         profiles_query = get_default_profiles_query(db=db)
         reviews_query = get_default_reviews_query(db=db)
+        search_input = "Search"
 
     return render_template(
         'search/search.j2',
-        input=get_input(db, profiles_query=profiles_query, reviews_query=reviews_query))
+        input=get_input(
+            db,
+            profiles_query=profiles_query,
+            reviews_query=reviews_query,
+            display_type=display_type,
+            search_for=search_for,
+            search_input=search_input))
