@@ -24,7 +24,7 @@ def create_app(test_config=None):
 
     @app.route("/hello")
     def hello():
-        return "<h1>I am an easter egglet</h1>"
+        return "<h1>I am an easter egglet</h1><img src=https://api.time.com/wp-content/uploads/2019/01/gettyimages-914246230.jpg?quality=85&w=1200&h=628&crop=1>"
     
     from . import db
     db.init_app(app)
