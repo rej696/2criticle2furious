@@ -38,19 +38,23 @@ def register():
             'select id from users where username = ?', (username,)
         ).fetchone() is not None:
             error = f'User {username} is already registered'
-        
+
         if error is None:
             db.execute(
                 '''insert into users 
                 (username, password, firstname, lastname, age, image_id, summary)
-                values (?, ?, ?, ?, ?, ?, ?)''',
-                (username, generate_password_hash(password), firstname,
-                 lastname, age, image_id, summary)
-            )
+                values (?, ?, ?, ?, ?, ?, ?)''', (
+                    username,
+                    generate_password_hash(password),
+                    firstname,
+                    lastname,
+                    age,
+                    image_id,
+                    summary))
             db.commit()
-            
+
             return redirect(url_for('auth.login'))
-        
+
         flash(error)
             
     return render_template('auth/register.j2')
